@@ -1,0 +1,55 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: bfb8a3d00034240909009c5d81a7574970ece2421e6078158302720376cf8e18
+
+name:           embedded-pattern-matching
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/tmcdonell/embedded-pattern-matching#readme>
+homepage:       https://github.com/tmcdonell/embedded-pattern-matching#readme
+bug-reports:    https://github.com/tmcdonell/embedded-pattern-matching/issues
+author:         Trevor L. McDonell
+maintainer:     trevor.mcdonell@gmail.com
+copyright:      2020 Trevor L. McDonell
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/tmcdonell/embedded-pattern-matching
+
+library
+  exposed-modules:
+      Bool
+      Debug
+      Either
+      Elt
+      Example
+      Exp
+      Match
+      Maybe
+      Pattern
+      Pretty
+      Tag
+      Test
+      TH
+      Type
+  other-modules:
+      Paths_embedded_pattern_matching
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , prettyprinter
+    , prettyprinter-ansi-terminal
+    , template-haskell
+    , text
+  default-language: Haskell2010
