@@ -26,6 +26,6 @@ All the files are contained in the `src/` directory. The main files are:
   - `Elt.hs`: The type class `Elt` from Section 4
   - `Pattern.hs`: The polymorphic pattern synonym `Pattern` and type class `IsPattern` developed in Section 5.1
   - `Tag.hs`: The `TraceR` structure for tagging algebraic data types from Section 5.2.3
-  - `TH.hs`: Implementation of the `mkPattern` TemplateHaskell magic mentioned in Section 5.2.3 to automatically generate pattern synonyms for sum data types
+  - `TH.hs`: Implementation of the `mkPattern` TemplateHaskell magic mentioned in Section 5.2.3 to automatically generate pattern synonyms for sum data types. In order to view the generated pattern synonyms together with their builder and matcher functions, add (or uncomment) the line `{-# OPTIONS_GHC -ddump-splices #-}` for example in the files `Bool.hs`, `Maybe.hs`, and `Either.hs`.
   - `Match.hs`: Implementation of the `match` function from Section 5.2.4
 
