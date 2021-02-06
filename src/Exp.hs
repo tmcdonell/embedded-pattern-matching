@@ -9,6 +9,7 @@ import Elt
 import Rec
 import Trace
 import Tuple
+import Type
 
 import Data.Dynamic
 import Data.Map                                           ( Map )
@@ -35,7 +36,7 @@ data Exp a where
   Roll      :: Exp a -> Exp (Rec a)
 
   -- Pattern matching
-  Undef     :: Elt a => Exp a
+  Undef     :: TypeR (EltR a) -> Exp a
   Match     :: TraceR (EltR a) -> Exp a -> Exp a
   Case      :: Elt a => Exp a -> [(TraceR (EltR a), Exp b)] -> Exp b
 
@@ -48,6 +49,11 @@ data Tuple t where
   Unit :: Tuple ()
   Exp  :: Exp a -> Tuple a
   Pair :: Tuple a -> Tuple b -> Tuple (a, b)
+
+data TupleIdx t e where
+  PrjZ ::                 TupleIdx t      t
+  PrjL :: TupleIdx l e -> TupleIdx (l, r) e
+  PrjR :: TupleIdx r e -> TupleIdx (l, r) e
 
 
 -- Very unsafe variable bindings!

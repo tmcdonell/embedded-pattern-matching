@@ -6,13 +6,14 @@ module Type (
 ) where
 
 import Rec
+import {-# SOURCE #-} Elt
+
 import Data.Word
-import Type.Reflection
 
 data TypeR a where
   TypeRunit :: TypeR ()
-  TypeRrec  :: TypeRep a -> TypeR (Rec a)
   TypeRprim :: PrimType a -> TypeR a
+  TypeRrec  :: Elt a => TypeR (EltR a) -> TypeR (Rec a)
   TypeRpair :: TypeR a -> TypeR b -> TypeR (a,b)
 
 data PrimType a where

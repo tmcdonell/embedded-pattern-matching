@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveAnyClass       #-}
+{-# LANGUAGE DeriveGeneric        #-}
 {-# LANGUAGE PatternSynonyms      #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
@@ -12,7 +14,9 @@ import Pattern
 import Tuple
 
 data Point = Point Float Float
+  deriving (Generic, Elt, IsTuple)
 
+{--
 instance Elt Point where
   type EltR Point = EltR (Float, Float)
 
@@ -30,6 +34,7 @@ instance IsTuple Point where
   fromTup (Point x y) = fromTup (x, y)
   toTup t = let (x,y) = toTup t
              in Point x y
+--}
 
 pattern Point_ :: Exp Float -> Exp Float -> Exp Point
 pattern Point_ x y = Pattern (x, y)

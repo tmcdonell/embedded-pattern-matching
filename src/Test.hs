@@ -17,15 +17,13 @@ import Maybe
 import Point
 import Pretty ()
 import Rec
-import Tuple
-import Either
 
 import Data.Function ( (&) )
 import Prelude hiding ( fst, snd, length )
 
 
 dummy :: forall a. Elt a => Exp a
-dummy = Undef @a
+dummy = Undef (eltR @a)
 
 t1 :: Exp (List Int)
 t1 = int 100 `cons` int 101 `cons` int 102 `cons` nil
@@ -104,8 +102,8 @@ tag :: TAG -> Exp TAG
 tag = Constant
 
 nil :: Exp (List Int)
-nil = Tuple $ Exp (tag 0) `Pair` (Unit `Pair` Exp (Undef @Int)
-                                       `Pair` Exp (Undef @(Rec (List Int))))
+nil = Tuple $ Exp (tag 0) `Pair` (Unit `Pair` Exp (Undef (eltR @Int))
+                                       `Pair` Exp (Undef (eltR @(Rec (List Int)))))
 
 infixr 5 `cons`
 cons :: Elt a => Exp a -> Exp (List a) -> Exp (List a)

@@ -4,7 +4,7 @@ module Trace where
 
 import Rec
 import Type
-import Type.Reflection
+import {-# SOURCE #-} Elt
 
 type TAG = Word8
 
@@ -33,8 +33,8 @@ type TAG = Word8
 --
 data TraceR a where
   TraceRunit   :: TraceR ()
-  TraceRrec    :: TypeRep a -> TraceR (Rec a)
   TraceRprim   :: PrimType a -> TraceR a
+  TraceRrec    :: TypeR (EltR a) -> TraceR (Rec a)
   TraceRundef  :: TypeR a -> TraceR a
   TraceRtag    :: TAG -> TraceR a -> TraceR (Word8, a)
   TraceRpair   :: TraceR a -> TraceR b -> TraceR (a, b)

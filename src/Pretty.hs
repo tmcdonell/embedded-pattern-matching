@@ -13,7 +13,6 @@ import Elt
 import Exp
 import Rec
 import Trace
-import Tuple
 import Type
 
 import Data.Text.Prettyprint.Doc

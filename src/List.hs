@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric        #-}
 {-# LANGUAGE PatternSynonyms      #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE TypeApplications     #-}
@@ -14,10 +15,9 @@ import Type
 import Trace
 import Exp
 
-import Type.Reflection
-
 
 data List a = Nil | Cons a (List a)
+  deriving Generic
 
 instance Show a => Show (List a) where
   show = show . toList
@@ -40,7 +40,8 @@ instance Elt a => Elt (List a) where
   eltR = eltR @TAG `TypeRpair` eltR @(a, Rec (List a))
 
   traceR = TraceRtag 0 (TraceRunit `TraceRpair` TraceRundef (eltR @a) `TraceRpair` TraceRundef (eltR @(Rec (List a))))
-       : [ TraceRtag 1 (TraceRunit `TraceRpair` a `TraceRpair` TraceRrec typeRep) | a <- traceR @a ]
+       : [ TraceRtag 1 (TraceRunit `TraceRpair` a `TraceRpair` TraceRrec (eltR @(List a))) | a <- traceR @a ]
+
 
 instance IsTuple (List a) where
   type TupleR (List a) = (TAG, TupleR (a, Rec (List a)))
@@ -63,8 +64,8 @@ pattern Cons_ x xs <- (matchCons -> Just (x, xs))
 {-# COMPLETE Nil_, Cons_ #-}
 
 buildNil :: forall a. Elt a => Exp (List a)
-buildNil = Tuple $ Exp (Constant 0) `Pair` (Unit `Pair` Exp (Undef @a)
-                                                 `Pair` Exp (Undef @(Rec (List a))))
+buildNil = Tuple $ Exp (Constant 0) `Pair` (Unit `Pair` Exp (Undef (eltR @a))
+                                                 `Pair` Exp (Undef (eltR @(Rec (List a)))))
 
 buildCons :: Elt a => Exp a -> Exp (List a) -> Exp (List a)
 buildCons x xs = Tuple $ Exp (Constant 1) `Pair` (Unit `Pair` Exp x `Pair` Exp (Roll xs))
