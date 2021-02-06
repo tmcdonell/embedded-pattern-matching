@@ -1,6 +1,7 @@
 {-# LANGUAGE BlockArguments      #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE LambdaCase          #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE PostfixOperators    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications    #-}
@@ -20,7 +21,7 @@ import Tuple
 import Either
 
 import Data.Function ( (&) )
-import Prelude hiding ( fst, snd, (^) )
+import Prelude hiding ( fst, snd, length )
 
 
 dummy :: forall a. Elt a => Exp a
@@ -84,6 +85,14 @@ safeTail :: Elt a => Exp (List a) -> Exp (Maybe (List a))
 safeTail = match \case
   Nil_ -> Nothing_
   Cons_ _ xs -> Just_ xs
+
+length :: Elt a => Exp (List a) -> Exp Int
+length = match \case
+  Nil_       -> int 0
+  Cons_ _ xs -> int 1 `Add` App f xs
+    where
+      ix = Idx "xs"
+      f  = Lam ix (length (Var ix))
 
 int :: Int -> Exp Int
 int = Constant

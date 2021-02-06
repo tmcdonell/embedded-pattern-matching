@@ -18,77 +18,69 @@ import qualified Data.Text                                as T
 
 
 data Exp a where
-  Constant :: Elt a => EltR a -> Exp a
+  -- STLC with explicit let-binding. We don't bother with the type-level environment.
+  -- Values are stored in representation format
+  Constant  :: Elt a => EltR a -> Exp a
+  Var       :: Idx t -> Exp t
+  Let       :: Idx a -> Exp a -> Exp b -> Exp b
+  App       :: Exp (a -> b) -> Exp a -> Exp b
+  Lam       :: Idx a -> Exp b -> Exp (a -> b)
 
-  Unroll   :: Exp (Rec a) -> Exp a
-  Roll     :: Exp a -> Exp (Rec a)
+  -- Add generic product types
+  Tuple     :: IsTuple t => Tuple (TupleR t) -> Exp t
+  Prj       :: IsTuple t => TupleIdx (TupleR t) e -> Exp t -> Exp e
 
-  Tuple    :: IsTuple t => Tuple (TupleR t) -> Exp t
-  Prj      :: IsTuple t => TupleIdx (TupleR t) e -> Exp t -> Exp e
+  -- Recursive types
+  Unroll    :: Exp (Rec a) -> Exp a
+  Roll      :: Exp a -> Exp (Rec a)
 
-  -- Tuple    :: Exp (TupleR a) -> Exp a
-  -- Unit     :: Exp ()
-  -- Pair     :: Exp a -> Exp b -> Exp (a, b)
-
-  -- PrjL     :: Exp (a, b) -> Exp a
-  -- PrjR     :: Exp (a, b) -> Exp b
-
+  -- Pattern matching
   Undef     :: Elt a => Exp a
   Match     :: TraceR (EltR a) -> Exp a -> Exp a
   Case      :: Elt a => Exp a -> [(TraceR (EltR a), Exp b)] -> Exp b
 
-  Var       :: Idx t -> Exp t
-  Let       :: Idx a -> Exp a -> Exp b -> Exp b
+  -- PrimOps
+  Add       :: Exp Int -> Exp Int -> Exp Int
 
-type Name = Text
-
-data Idx t where
-  Idx :: Elt t => Name -> Idx t
-
+-- Tuples are heterogeneous lists using () and (,)
+--
 data Tuple t where
   Unit :: Tuple ()
   Exp  :: Exp a -> Tuple a
   Pair :: Tuple a -> Tuple b -> Tuple (a, b)
 
--- data Tuple t where
---   NilTup   :: Tuple ()
---   TagTup   :: TAG -> Tuple TAG
---   SnocTup  :: Elt t => Tuple s -> Exp t -> Tuple (s, t)
 
--- infixl 1 !
--- (!) :: Exp a -> Exp (Rec a)
--- (!) = Roll
+-- Very unsafe variable bindings!
+--
+type Name = Text
 
--- ref :: Exp a -> Exp (Rec a)
--- ref = Roll
-
--- deref :: Exp (Rec a) -> Exp a
--- deref = Unroll
-
--- infixl 1 !
--- (!) :: Exp (Rec a) -> Exp a
--- (!) = Unroll
-
-
+data Idx t where
+  Idx :: Elt t => Name -> Idx t
 
 type Env = Map Name Dynamic
 
+
+-- Standard type-safe evaluator
+--
 eval :: Exp a -> a
 eval = evalExp Map.empty
 
 evalExp :: Env -> Exp a -> a
 evalExp env = \case
-  Constant c  -> toElt c
-  Unroll e    -> let Rec x = evalExp env e in x
-  Roll e      -> Rec (evalExp env e)
-  Tuple t     -> toTup $ evalTup env t
-  Prj tix t   -> evalPrj tix (fromTup (evalExp env t))
-  Undef{}     -> error "evalExp: undef"
-  Match{}     -> error "evalExp: match"
-  Case x xs   -> evalExp env $ lookupCase (fromElt (evalExp env x)) xs
-  Var ix      -> lookupEnv ix env
-  Let (Idx v) a b
-    -> evalExp (Map.insert v (toDyn (evalExp env a)) env) b
+  Constant c      -> toElt c
+  Var ix          -> lookupEnv ix env
+  Let (Idx v) a b -> evalExp (Map.insert v (toDyn (evalExp env a)) env) b
+  Lam (Idx v) b   -> \a -> evalExp (Map.insert v (toDyn a) env) b
+  App f x         -> (evalExp env f) (evalExp env x)
+  Tuple t         -> toTup $ evalTup env t
+  Prj tix t       -> evalPrj tix (fromTup (evalExp env t))
+  Unroll e        -> let Rec x = evalExp env e in x
+  Roll e          -> Rec (evalExp env e)
+  Undef{}         -> error "evalExp: undef"
+  Match{}         -> error "evalExp: match"
+  Case x xs       -> evalExp env $ lookupCase (fromElt (evalExp env x)) xs
+  --
+  Add x y         -> evalExp env x + evalExp env y
 
 evalTup :: Env -> Tuple t -> t
 evalTup env = \case

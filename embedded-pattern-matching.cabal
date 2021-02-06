@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bfb8a3d00034240909009c5d81a7574970ece2421e6078158302720376cf8e18
+-- hash: 62e536120200b889aa063bf7a5b1363dd5b5c6db8582d710fa139355aabd323d
 
 name:           embedded-pattern-matching
 version:        0.1.0.0
@@ -27,19 +27,20 @@ source-repository head
 
 library
   exposed-modules:
-      Bool
       Debug
       Either
       Elt
-      Example
       Exp
+      List
       Match
       Maybe
       Pattern
+      Point
       Pretty
-      Tag
+      Rec
       Test
-      TH
+      Trace
+      Tuple
       Type
   other-modules:
       Paths_embedded_pattern_matching

@@ -98,6 +98,9 @@ ppExp = \case
       isLet Let{} = True
       isLet _     = False
 
+  App f x     -> ppExp f <+> ppExp x
+  Lam ix x    -> "\\" <> ppIdx ix <+> "->" <+> ppExp x
+
   Undef{}     -> "undef"
 
   Case x xs ->
@@ -108,6 +111,8 @@ ppExp = \case
 
   -- Match{} -> error "Match: should not appear in the final AST"
   Match t e   -> annotate (color Red) "match" <+> ppTrace t <+> parens (ppExp e)
+
+  Add x y     -> ppExp x <+> "+" <+> ppExp y
 
 
 ppIdx :: Idx t -> Adoc
