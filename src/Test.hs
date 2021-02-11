@@ -84,13 +84,25 @@ safeTail = match \case
   Nil_ -> Nothing_
   Cons_ _ xs -> Just_ xs
 
+-- length :: Elt a => Exp (List a) -> Exp Int
+-- length = match \case
+--   Nil_       -> int 0
+--   Cons_ _ xs -> int 1 `Add` App f xs
+--     where
+--       ix = Idx "xs"
+--       f  = Lam ix (length (Var ix))
+
 length :: Elt a => Exp (List a) -> Exp Int
-length = match \case
-  Nil_       -> int 0
-  Cons_ _ xs -> int 1 `Add` App f xs
-    where
-      ix = Idx "xs"
-      f  = Lam ix (length (Var ix))
+length xs =
+  let l    = Idx "length"
+      v    = Idx "xs"
+      fun  = Lam v (body (Var v))
+      body = match \case
+        Nil_        -> int 0
+        Cons_ _ xs' -> int 1 `Add` App (Var l) xs'
+  in
+  Let l fun (App (Var l) xs)
+
 
 int :: Int -> Exp Int
 int = Constant

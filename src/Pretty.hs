@@ -98,7 +98,7 @@ ppExp = \case
       isLet _     = False
 
   App f x     -> ppExp f <+> ppExp x
-  Lam ix x    -> "\\" <> ppIdx ix <+> "->" <+> ppExp x
+  Lam ix x    -> "\\" <> ppIdx ix <+> "->" <+> align (ppExp x)
 
   Undef{}     -> "undef"
 

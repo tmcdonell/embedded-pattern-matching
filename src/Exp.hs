@@ -23,7 +23,7 @@ data Exp a where
   -- Values are stored in representation format
   Constant  :: Elt a => EltR a -> Exp a
   Var       :: Idx t -> Exp t
-  Let       :: Idx a -> Exp a -> Exp b -> Exp b
+  Let       :: Idx a -> Exp a -> Exp b -> Exp b -- letrec
   App       :: Exp (a -> b) -> Exp a -> Exp b
   Lam       :: Idx a -> Exp b -> Exp (a -> b)
 
@@ -61,7 +61,7 @@ data TupleIdx t e where
 type Name = Text
 
 data Idx t where
-  Idx :: Elt t => Name -> Idx t
+  Idx :: Typeable t => Name -> Idx t
 
 type Env = Map Name Dynamic
 
@@ -75,7 +75,8 @@ evalExp :: Env -> Exp a -> a
 evalExp env = \case
   Constant c      -> toElt c
   Var ix          -> lookupEnv ix env
-  Let (Idx v) a b -> evalExp (Map.insert v (toDyn (evalExp env a)) env) b
+  Let (Idx v) a b -> let env' = Map.insert v (toDyn (evalExp env' a)) env
+                      in evalExp env' b
   Lam (Idx v) b   -> \a -> evalExp (Map.insert v (toDyn a) env) b
   App f x         -> (evalExp env f) (evalExp env x)
   Tuple t         -> toTup $ evalTup env t
