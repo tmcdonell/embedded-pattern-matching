@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 62e536120200b889aa063bf7a5b1363dd5b5c6db8582d710fa139355aabd323d
+-- hash: 60de73e214bc94a9a7d97ee7549c1cda1ae45cb98c1d0ae1c00863d69c2dae50
 
 name:           embedded-pattern-matching
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Bool
       Debug
       Either
       Elt

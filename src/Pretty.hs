@@ -27,7 +27,7 @@ type Adoc = Doc AnsiStyle
 
 ppExp :: forall a. Exp a -> Adoc
 ppExp = \case
-  Constant v  -> go (eltR @a) v
+  Const v     -> go (eltR @a) v
     where
       go :: TypeR t -> t -> Adoc
       go TypeRunit         ()      = "()"

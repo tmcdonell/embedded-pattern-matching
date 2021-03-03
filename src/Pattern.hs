@@ -27,7 +27,7 @@ instance (IsTuple r, TupleR r ~ ((), a), EltR r ~ ((), EltR a)) => IsPattern r (
       Match (TraceRunit `TraceRpair` a) x -> Match a (Prj (PrjR PrjZ) x)
       x                                   -> Prj (PrjR PrjZ) x
 
-instance (IsTuple r, TupleR r ~ (((), a), b), EltR r ~ EltR (a, b)) => IsPattern r (Exp a, Exp b) where
+instance (IsTuple r, TupleR r ~ TupleR (a, b), EltR r ~ EltR (a, b)) => IsPattern r (Exp a, Exp b) where
   construct (x, y) =
     Tuple $ Unit `Pair` Exp (unMatch x) `Pair` Exp (unMatch y)
 

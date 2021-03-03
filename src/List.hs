@@ -6,7 +6,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ViewPatterns         #-}
 
-module List where
+module List (
+
+  List(..), toList, fromList,
+  pattern Nil_,
+  pattern Cons_,
+
+) where
 
 import Elt
 import Rec
@@ -25,6 +31,10 @@ instance Show a => Show (List a) where
 toList :: List a -> [a]
 toList Nil         = []
 toList (Cons x xs) = x : toList xs
+
+fromList :: [a] -> List a
+fromList []     = Nil
+fromList (x:xs) = Cons x (fromList xs)
 
 instance Elt a => Elt (List a) where
   type EltR (List a) = (TAG, EltR (a, Rec (List a)))
@@ -63,12 +73,15 @@ pattern Cons_ x xs <- (matchCons -> Just (x, xs))
   where Cons_ = buildCons
 {-# COMPLETE Nil_, Cons_ #-}
 
+tag :: TAG -> Tuple TAG
+tag x = Exp $ Const x
+
 buildNil :: forall a. Elt a => Exp (List a)
-buildNil = Tuple $ Exp (Constant 0) `Pair` (Unit `Pair` Exp (Undef (eltR @a))
-                                                 `Pair` Exp (Undef (eltR @(Rec (List a)))))
+buildNil = Tuple $ tag 0 `Pair` (Unit `Pair` Exp (Undef (eltR @a))
+                                      `Pair` Exp (Undef (eltR @(Rec (List a)))))
 
 buildCons :: Elt a => Exp a -> Exp (List a) -> Exp (List a)
-buildCons x xs = Tuple $ Exp (Constant 1) `Pair` (Unit `Pair` Exp x `Pair` Exp (Roll xs))
+buildCons x xs = Tuple $ tag 1 `Pair` (Unit `Pair` Exp x `Pair` Exp (Roll xs))
 
 matchNil :: Elt a => Exp (List a) -> Maybe ()
 matchNil (Match (TraceRtag 0 _) _) = Just ()

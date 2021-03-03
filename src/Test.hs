@@ -9,6 +9,7 @@
 
 module Test where
 
+import Bool
 import Elt
 import Exp
 import List
@@ -17,6 +18,7 @@ import Maybe
 import Point
 import Pretty ()
 import Rec
+import Type
 
 import Data.Function ( (&) )
 import Prelude hiding ( fst, snd, length )
@@ -74,6 +76,12 @@ t9 = match \case
   Nil_ -> float 0
   Cons_ (Point_ x _) _ -> x
 
+t10 :: Exp (Maybe Bool) -> Exp Int
+t10 = match \case
+  Nothing_     -> int 0
+  Just_ False_ -> int 1
+  Just_ True_  -> int 2
+
 safeHead :: Elt a => Exp (List a) -> Exp (Maybe a)
 safeHead = match \case
   Nil_ -> Nothing_
@@ -104,22 +112,35 @@ length xs =
   Let l fun (App (Var l) xs)
 
 
+
+-- constant :: Elt a => a -> Exp a
+-- constant x = go eltR (toElt x)
+--   where
+
+
 int :: Int -> Exp Int
-int = Constant
+int = Const
 
 float :: Float -> Exp Float
-float = Constant
+float = Const
 
-tag :: TAG -> Exp TAG
-tag = Constant
+word8 :: Word8 -> Exp Word8
+word8 = Const
 
-nil :: Exp (List Int)
-nil = Tuple $ Exp (tag 0) `Pair` (Unit `Pair` Exp (Undef (eltR @Int))
-                                       `Pair` Exp (Undef (eltR @(Rec (List Int)))))
+tag :: TAG -> Tuple TAG
+tag = Exp . word8
+
+liftList :: forall a. Elt a => List a -> Exp (List a)
+liftList Nil = nil
+liftList (Cons x xs) = Const (fromElt x) `cons` liftList xs
+
+nil :: forall a. Elt a => Exp (List a)
+nil = Tuple $ tag 0 `Pair` (Unit `Pair` Exp (Undef (eltR @a))
+                                 `Pair` Exp (Undef (eltR @(Rec (List a)))))
 
 infixr 5 `cons`
 cons :: Elt a => Exp a -> Exp (List a) -> Exp (List a)
-cons x xs = Tuple $ Exp (tag 1) `Pair` (Unit `Pair` Exp x `Pair` Exp (Roll xs))
+cons x xs = Tuple $ tag 1 `Pair` (Unit `Pair` Exp x `Pair` Exp (Roll xs))
 
 pair :: Exp a -> Exp b -> Exp (a, b)
 pair a b = Tuple $ Unit `Pair` Exp a `Pair` Exp b

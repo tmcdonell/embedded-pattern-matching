@@ -5,11 +5,15 @@
 {-# LANGUAGE ViewPatterns        #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Maybe where
+module Maybe (
+  Maybe(..), liftMaybe,
+  pattern Nothing_,
+  pattern Just_,
+) where
 
 import Elt
-import Trace
 import Exp
+import Trace
 import Tuple
 
 instance Elt a => Elt (Maybe a) where
@@ -50,11 +54,18 @@ pattern Just_ x <- (matchJust -> Just x)
   where Just_ = buildJust
 {-# COMPLETE Nothing_, Just_ #-}
 
+tag :: TAG -> Tuple TAG
+tag x = Exp $ Const x
+
+liftMaybe :: forall a. Elt a => Maybe a -> Exp (Maybe a)
+liftMaybe Nothing  = Tuple $ tag 0 `Pair` (Unit `Pair` Exp (Undef (eltR @a)))
+liftMaybe (Just a) = Tuple $ tag 1 `Pair` (Unit `Pair` Exp (Const (fromElt a)))
+
 buildNothing :: forall a. Elt a => Exp (Maybe a)
-buildNothing = Tuple $ Exp (Constant 0) `Pair` (Unit `Pair` Exp (Undef (eltR @a)))
+buildNothing = Tuple $ tag 0 `Pair` (Unit `Pair` Exp (Undef (eltR @a)))
 
 buildJust :: Elt a => Exp a -> Exp (Maybe a)
-buildJust x = Tuple $ Exp (Constant 1) `Pair` (Unit `Pair` Exp x)
+buildJust x = Tuple $ tag 1 `Pair` (Unit `Pair` Exp x)
 
 matchNothing :: Exp (Maybe a) -> Maybe ()
 matchNothing (Match (TraceRtag 0 _) _) = Just ()

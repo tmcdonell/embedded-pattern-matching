@@ -40,3 +40,10 @@ pattern Point_ :: Exp Float -> Exp Float -> Exp Point
 pattern Point_ x y = Pattern (x, y)
 {-# COMPLETE Point_ #-}
 
+liftPoint :: Point -> Exp Point
+liftPoint (Point x y) =
+  Tuple $ Unit `Pair` Exp (Const x) `Pair` Exp (Const y)
+
+xcoord :: Exp Point -> Exp Float
+xcoord x = Prj (PrjL (PrjR PrjZ)) x
+

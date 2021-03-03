@@ -21,7 +21,7 @@ import qualified Data.Text                                as T
 data Exp a where
   -- STLC with explicit let-binding. We don't bother with the type-level environment.
   -- Values are stored in representation format
-  Constant  :: Elt a => EltR a -> Exp a
+  Const     :: Elt a => EltR a -> Exp a
   Var       :: Idx t -> Exp t
   Let       :: Idx a -> Exp a -> Exp b -> Exp b -- letrec
   App       :: Exp (a -> b) -> Exp a -> Exp b
@@ -50,10 +50,10 @@ data Tuple t where
   Exp  :: Exp a -> Tuple a
   Pair :: Tuple a -> Tuple b -> Tuple (a, b)
 
-data TupleIdx t e where
+data TupleIdx s t where
   PrjZ ::                 TupleIdx t      t
-  PrjL :: TupleIdx l e -> TupleIdx (l, r) e
-  PrjR :: TupleIdx r e -> TupleIdx (l, r) e
+  PrjL :: TupleIdx l t -> TupleIdx (l, r) t
+  PrjR :: TupleIdx r t -> TupleIdx (l, r) t
 
 
 -- Very unsafe variable bindings!
@@ -73,7 +73,7 @@ eval = evalExp Map.empty
 
 evalExp :: Env -> Exp a -> a
 evalExp env = \case
-  Constant c      -> toElt c
+  Const c         -> toElt c
   Var ix          -> lookupEnv ix env
   Let (Idx v) a b -> let env' = Map.insert v (toDyn (evalExp env' a)) env
                       in evalExp env' b
