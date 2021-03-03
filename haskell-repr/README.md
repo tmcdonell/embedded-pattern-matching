@@ -1,5 +1,5 @@
-embedded-pattern-matching
-=========================
+Haskell (representation type encoding)
+======================================
 
 This version has the AST witnessed by the _representation_ type of the terms.
 

@@ -1,6 +1,9 @@
-# About
+Scala
+=====
 
-This example implements the pattern synonym AST formation that the sibling Haskell version does.
+This example implements the pattern synonym AST formation that the sibling
+`haskell-surface` version does.
+
 We use `.apply` and `.unapply` with _extractor objects_ as the equivalent to Haskell's pattern
 synonym feature. It supports the use of products, sums, and nesting as the sibling does, however
 we stop at front-end AST formation for the purpose of demonstrating the application of this
@@ -8,17 +11,18 @@ technique using Scala features. Types and AST constructors for recursive types a
 but not fully implemented. Scala has generics libraries but the provided implementation uses
 manually written instances.
 
-# Usage
+## Building
 
-With `mill` (https://github.com/com-lihaoyi/mill) installed:
+  * Download and install the [mill build tool](https://github.com/com-lihaoyi/mill)
 
-`mill patterns.run`
+  * Run the command in the project directory:
+    - `mill patterns.run`
 
 This will run the `Test` module's `main` method. An example is provided here, which shows the use
 of a nested sum pattern match of type `Maybe[Maybe[Int]]`, and the final AST is printed to the
 console.
 
-# Layout
+## Structure
 
 Differences in Scala compared to Haskell that were encountered during the implementation of this
 version are discussed in `commentary.md`. Previous attempts are retained in comments.
@@ -28,3 +32,4 @@ an equivalent module.
 
 The example type is named `Maybe` for demonstration purposes, but in reality we would implement
 this instance on Scala's existing `Option` type.
+

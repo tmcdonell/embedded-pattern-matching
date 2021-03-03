@@ -1,5 +1,5 @@
-embedded-pattern-matching
-=========================
+Haskell (surface type encoding)
+===============================
 
 This version has the AST witnessed by the _surface_ type of the terms.
 
