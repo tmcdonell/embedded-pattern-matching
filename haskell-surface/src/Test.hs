@@ -102,15 +102,14 @@ safeTail = match \case
 
 length :: Elt a => Exp (List a) -> Exp Int
 length xs =
-  let l    = Idx "length"
-      v    = Idx "xs"
-      fun  = Lam v (body (Var v))
-      body = match \case
+  let body = match \case
         Nil_        -> int 0
         Cons_ _ xs' -> int 1 `Add` App (Var l) xs'
+      --
+      l    = Idx "length"
+      v    = Idx "xs"
   in
-  Let l fun (App (Var l) xs)
-
+  Let l (Lam v (body (Var v))) (App (Var l) xs)
 
 
 -- constant :: Elt a => a -> Exp a
