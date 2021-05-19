@@ -87,6 +87,11 @@ class GIsSumTuple f where
   gfromSumTup :: t -> f a -> GSumTupleR t f
   gtoSumTup :: GSumTupleR t f -> (t, f a)
 
+instance GIsSumTuple U1 where
+  type GSumTupleR t U1 = t
+  gfromSumTup t U1 = t
+  gtoSumTup t = (t, U1)
+
 instance GIsSumTuple a => GIsSumTuple (M1 i c a) where
   type GSumTupleR t (M1 i c a) = GSumTupleR t a
   gfromSumTup t (M1 x) = gfromSumTup t x

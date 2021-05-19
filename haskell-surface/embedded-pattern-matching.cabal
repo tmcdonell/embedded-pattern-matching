@@ -1,16 +1,16 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d7e341d3109579a067d024d90693989f1d3d982674f7b43eb71d0bb6e0f2b709
+-- hash: afa2d8c20e1cd8669fcc0413766e299650288f6afee27e5b7f4aadc33c92f6b9
 
 name:           embedded-pattern-matching
 version:        0.1.0.0
-description:    Please see the README on GitHub at <redacted>
-homepage:       https://github.com/redacted#readme
-bug-reports:    https://github.com/redacted/issues
+description:    Please see the README on GitHub at https://github.com/tmcdonell/embedded-pattern-matching
+homepage:       https://github.com/tmcdonell/embedded-pattern-matching#readme
+bug-reports:    https://github.com/tmcdonell/embedded-pattern-matching/issues
 author:         redacted
 maintainer:     redacted
 copyright:      redacted
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/redacted
+  location: https://github.com/tmcdonell/embedded-pattern-matching
 
 library
   exposed-modules:
@@ -33,6 +33,7 @@ library
       List
       Match
       Maybe
+      Mutual
       Pattern
       Point
       Pretty

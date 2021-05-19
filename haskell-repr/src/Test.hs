@@ -293,3 +293,9 @@ mkPattern ''Option
 mkPattern ''V3
 mkPattern ''Zq
 
+fromOption :: Elt a => Exp a -> Exp (Option a) -> Exp a
+fromOption = match go
+  where
+    go x None_     = x
+    go _ (Some_ x) = x
+

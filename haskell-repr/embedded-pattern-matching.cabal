@@ -1,16 +1,16 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 700f4db153d08c497f7561f0fc2b92f6258371ec835f92b83e390f883d2d3d91
+-- hash: e74e399b44938bb8dcf829c2f295d18ffca4c51731ce70017198661e756a0232
 
 name:           embedded-pattern-matching
 version:        0.1.0.0
-description:    Please see the README on GitHub at <redacted>
-homepage:       https://github.com/redacted#readme
-bug-reports:    https://github.com/redacted/issues
+description:    Please see the README on GitHub at <https://github.com/tmcdonell/embedded-pattern-matching#readme>
+homepage:       https://github.com/tmcdonell/embedded-pattern-matching#readme
+bug-reports:    https://github.com/tmcdonell/embedded-pattern-matching/issues
 author:         redacted
 maintainer:     redacted
 copyright:      redacted
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/redacted
+  location: https://github.com/tmcdonell/embedded-pattern-matching
 
 library
   exposed-modules:

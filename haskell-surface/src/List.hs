@@ -23,7 +23,10 @@ import Exp
 
 
 data List a = Nil | Cons a (List a)
-  deriving Generic
+  -- deriving (Generic, Elt, IsTuple)
+
+-- mkPattern ''List
+  -- generate all instances Elt, IsTuple, and the pattern synonyms
 
 instance Show a => Show (List a) where
   show = show . toList
@@ -36,6 +39,7 @@ fromList :: [a] -> List a
 fromList []     = Nil
 fromList (x:xs) = Cons x (fromList xs)
 
+{--}
 instance Elt a => Elt (List a) where
   type EltR (List a) = (TAG, EltR (a, Rec (List a)))
 
@@ -62,7 +66,7 @@ instance IsTuple (List a) where
   toTup (1, t) = let (x, Rec xs) = toTup t
                   in Cons x xs
   toTup _      = error "internal error"
-
+--}
 
 pattern Nil_ :: Elt a => Exp (List a)
 pattern Nil_ <- (matchNil -> Just ())
