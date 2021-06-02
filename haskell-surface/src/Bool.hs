@@ -1,9 +1,11 @@
 {-# LANGUAGE PatternSynonyms     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell     #-}
 {-# LANGUAGE TypeApplications    #-}
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE ViewPatterns        #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -ddump-splices    #-}
 
 module Bool (
   Bool(..),
@@ -12,13 +14,19 @@ module Bool (
 ) where
 
 import Elt
+import Tuple
+import TH
+
 import Exp
 import Trace
-import Tuple
+import Type
 
 instance Elt Bool
 instance IsTuple Bool
 
+mkPattern ''Bool
+
+{--
 pattern False_ :: Exp Bool
 pattern False_ <- (matchFalse -> Just ())
   where False_ = buildFalse
@@ -46,4 +54,5 @@ matchTrue :: Exp Bool -> Maybe ()
 matchTrue (Match (TraceRtag 1 _) _) = Just ()
 matchTrue Match{}                   = Nothing
 matchTrue _                         = error "matchTrue: used outside 'match' context"
+--}
 

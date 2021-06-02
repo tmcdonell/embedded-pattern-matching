@@ -58,12 +58,10 @@ data TupleIdx s t where
 
 -- Very unsafe variable bindings!
 --
-type Name = Text
-
 data Idx t where
-  Idx :: Typeable t => Name -> Idx t
+  Idx :: Typeable t => Text -> Idx t
 
-type Env = Map Name Dynamic
+type Env = Map Text Dynamic
 
 
 -- Standard type-safe evaluator

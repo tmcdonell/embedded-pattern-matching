@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: afa2d8c20e1cd8669fcc0413766e299650288f6afee27e5b7f4aadc33c92f6b9
+-- hash: 676813f7f225d426433a72233cbdf15b8d70c922bd2dc86dc4b76f2d5d769457
 
 name:           embedded-pattern-matching
 version:        0.1.0.0
-description:    Please see the README on GitHub at https://github.com/tmcdonell/embedded-pattern-matching
+description:    Please see the README on GitHub at <https://github.com/tmcdonell/embedded-pattern-matching#readme>
 homepage:       https://github.com/tmcdonell/embedded-pattern-matching#readme
 bug-reports:    https://github.com/tmcdonell/embedded-pattern-matching/issues
 author:         redacted
@@ -33,12 +33,12 @@ library
       List
       Match
       Maybe
-      Mutual
       Pattern
       Point
       Pretty
       Rec
       Test
+      TH
       Trace
       Tuple
       Type

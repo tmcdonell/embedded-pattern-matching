@@ -1,9 +1,11 @@
 {-# LANGUAGE PatternSynonyms     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell     #-}
 {-# LANGUAGE TypeApplications    #-}
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE ViewPatterns        #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -ddump-splices    #-}
 
 module Maybe (
   Maybe(..), liftMaybe,
@@ -13,13 +15,19 @@ module Maybe (
 
 import Elt
 import Exp
-import Trace
+import TH
 import Tuple
 
 instance Elt a => Elt (Maybe a) where
 instance Elt a => IsTuple (Maybe a) where
 
+mkPattern ''Maybe
 
+liftMaybe :: Elt a => Maybe a -> Exp (Maybe a)
+liftMaybe Nothing  = Nothing_
+liftMaybe (Just x) = Just_ (Const (fromElt x))
+
+{--
 pattern Nothing_ :: Elt a => Exp (Maybe a)
 pattern Nothing_ <- (matchNothing -> Just ())
   where Nothing_ = buildNothing
@@ -51,4 +59,5 @@ matchJust :: Elt a => Exp (Maybe a) -> Maybe (Exp a)
 matchJust (Match (TraceRtag 1 (TraceRunit `TraceRpair` t)) x) = Just $ Match t (Prj (PrjR (PrjR PrjZ)) x)
 matchJust Match{} = Nothing
 matchJust _       = error "matchJust: used outside 'match' context"
+--}
 

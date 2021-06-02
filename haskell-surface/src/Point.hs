@@ -2,9 +2,12 @@
 {-# LANGUAGE DeriveGeneric        #-}
 {-# LANGUAGE PatternSynonyms      #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TemplateHaskell      #-}
 {-# LANGUAGE TypeApplications     #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE ViewPatterns         #-}
+{-# OPTIONS_GHC -ddump-splices #-}
 
 module Point where
 
@@ -12,6 +15,7 @@ import Elt
 import Exp
 import Pattern
 import Tuple
+import TH
 
 data Point = Point Float Float
   deriving (Show, Generic, Elt, IsTuple)
@@ -31,7 +35,9 @@ xcoord x = Prj (PrjL (PrjR PrjZ)) x
 data V2 a = V2 a a
   deriving (Show, Generic, Elt, IsTuple)
 
-pattern V2_ :: Elt a => Exp a -> Exp a -> Exp (V2 a)
-pattern V2_ x y = Pattern (x, y)
-{-# COMPLETE V2_ #-}
+mkPattern ''V2
+
+-- pattern V2_ :: Elt a => Exp a -> Exp a -> Exp (V2 a)
+-- pattern V2_ x y = Pattern (x, y)
+-- {-# COMPLETE V2_ #-}
 
