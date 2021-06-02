@@ -8,6 +8,7 @@ module TH where
 
 import Elt
 import Exp
+import Rec
 import Trace
 import Type
 
@@ -29,24 +30,27 @@ import qualified Language.Haskell.TH              as TH
 --   * Is it possible to add additional extensions pragmas to the file?
 --
 mkPattern :: Name -> DecsQ
-mkPattern nm = do
+mkPattern nm = mkPatternR nm []
+
+mkPatternR :: Name -> [Name] -> DecsQ
+mkPatternR nm rec = do
   info <- reify nm
   case info of
-    TyConI dec -> mkDec dec
+    TyConI dec -> mkDec rec dec
     _          -> fail "mkPattern: expected the name of a newtype or datatype"
 
-mkDec :: Dec -> DecsQ
-mkDec dec =
+mkDec :: [Name] -> Dec -> DecsQ
+mkDec rec dec =
   case dec of
-    DataD    _ nm tv _ cs _ -> mkDataD nm tv cs
-    NewtypeD _ nm tv _ c  _ -> mkNewtypeD nm tv c
+    DataD    _ nm tv _ cs _ -> mkDataD nm (nm:rec) tv cs
+    NewtypeD _ nm tv _ c  _ -> mkNewtypeD nm rec tv c
     _                       -> fail "mkPatterns: expected the name of a newtype or datatype"
 
-mkNewtypeD :: Name -> [TyVarBndr] -> Con -> DecsQ
-mkNewtypeD tn tvs c = mkDataD tn tvs [c]
+mkNewtypeD :: Name -> [Name] -> [TyVarBndr] -> Con -> DecsQ
+mkNewtypeD nm rec tvs c = mkDataD nm (nm:rec) tvs [c]
 
-mkDataD :: Name -> [TyVarBndr] -> [Con] -> DecsQ
-mkDataD tn tvs cs = do
+mkDataD :: Name -> [Name] -> [TyVarBndr] -> [Con] -> DecsQ
+mkDataD tn rec tvs cs = do
   (pats, decs) <- unzip <$> go [] fts cs cts
   comp         <- pragCompleteD pats Nothing
   return $ comp : concat decs
@@ -88,23 +92,23 @@ mkDataD tn tvs cs = do
         f n True  = setBit (n `shiftL` 1) 0
 
     go prev (this:next) (con:cons) (tag:tags) = do
-      r  <- mkCon st tn tvs prev next tag con
+      r  <- mkCon st tn rec tvs prev next tag con
       rs <- go (this:prev) next cons tags
       return (r : rs)
     go _ [] [] [] = return []
     go _ _  _  _  = fail "mkPatterns: unexpected error"
 
-mkCon :: Bool -> Name -> [TyVarBndr] -> [[Type]] -> [[Type]] -> Word8 -> Con -> Q (Name, [Dec])
-mkCon st tn tvs prev next tag = \case
-  NormalC nm fs -> mkNormalC st tn (map tyVarBndrName tvs) tag nm prev (map snd fs) next
-  RecC nm fs    -> undefined
-  InfixC a nm b -> undefined
+mkCon :: Bool -> Name -> [Name] -> [TyVarBndr] -> [[Type]] -> [[Type]] -> Word8 -> Con -> Q (Name, [Dec])
+mkCon st tn pts tvs prev next tag = \case
+  NormalC nm fs -> mkNormalC st tn pts (map tyVarBndrName tvs) tag nm prev (map snd fs) next
+  RecC nm fs    -> fail "mkPatterns: TODO: record syntax"
+  InfixC a nm b -> fail "mkPatterns: TODO: infix constructors"
   _             -> fail "mkPatterns: only constructors for \"vanilla\" syntax are supported"
 
-mkNormalC :: Bool -> Name -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])
-mkNormalC st tn tvs tag cn ps fs ns = do
-  (fun_mk,    dec_mk)    <- mkNormalC_build st tn tvs tag cn ps fs ns
-  (fun_match, dec_match) <- mkNormalC_match st tn tvs tag cn ps fs ns
+mkNormalC :: Bool -> Name -> [Name] -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])
+mkNormalC st tn pts tvs tag cn ps fs ns = do
+  (fun_mk,    dec_mk)    <- mkNormalC_build st tn pts tvs tag cn ps fs ns
+  (fun_match, dec_match) <- mkNormalC_match st tn pts tvs tag cn ps fs ns
   (pat,       dec_pat)   <- mkNormalC_pattern tn tvs cn fs fun_mk fun_match
   return $ (pat, concat [dec_pat, dec_mk, dec_match])
 
@@ -127,15 +131,15 @@ mkNormalC_pattern tn tvs cn fs mk match = do
                    [t| Exp $(foldl' appT (conT tn) (map varT tvs)) |]
                    (map (\t -> [t| Exp $(return t) |]) fs))
 
-mkNormalC_build :: Bool -> Name -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])
-mkNormalC_build sum_type tn tvs tag cn fs0 fs fs1 = do
+mkNormalC_build :: Bool -> Name -> [Name] -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])
+mkNormalC_build sum_type tn pts tvs tag cn fs0 fs fs1 = do
   fun <- newName ("_build" ++ nameBase cn)
   xs  <- replicateM (length fs) (newName "_x")
   let
     vs    = foldl' (\es e -> [| $es `Pair` $e |]) [| Unit |]
-          $  map (\x -> [| Exp (Undef (eltR @ $(return x))) |] ) (concat (reverse fs0))
-          ++ map (\x -> [| Exp $(varE x) |]) xs
-          ++ map (\x -> [| Exp (Undef (eltR @ $(return x))) |] ) (concat fs1)
+          $  map (\x -> [| Exp (Undef (eltR @ $(rec x))) |] ) (concat (reverse fs0))
+          ++ zipWith (\t x -> [| Exp $(roll t x) |]) fs xs
+          ++ map (\x -> [| Exp (Undef (eltR @ $(rec x))) |] ) (concat fs1)
 
     body  = clause (map varP xs) (normalB tagged) []
       where
@@ -155,9 +159,18 @@ mkNormalC_build sum_type tn tvs tag cn fs0 fs fs1 = do
                      [t| Exp $(foldl' appT (conT tn) (map varT tvs)) |]
                      (map (\t -> [t| Exp $(return t) |]) fs))
 
+    rec t
+      | Just n <- tyCon t, elem n pts = [t| Rec $(return t) |]
+      | otherwise                     = return t
 
-mkNormalC_match :: Bool -> Name -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])
-mkNormalC_match sum_type tn tvs tag cn fs0 fs fs1 = do
+    roll t x
+      | Just n <- tyCon t, elem n pts = [| Roll $(varE x) |]
+      | otherwise                     = varE x
+
+
+
+mkNormalC_match :: Bool -> Name -> [Name] -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])
+mkNormalC_match sum_type tn pts tvs tag cn fs0 fs fs1 = do
   fun     <- newName ("_match" ++ nameBase cn)
   e       <- newName "_e"
   x       <- newName "_x"
@@ -195,12 +208,16 @@ mkNormalC_match sum_type tn tvs tag cn fs0 fs fs1 = do
       let next = [| PrjL $prj |]
           this | sum_type  = [| PrjR $prj |]
                | otherwise = prj
-      if not u
-         then extract x next us (wildP  :ps) es
-         else extract x next us (varP _u:ps) ([| Match $(varE _u) (Prj $this $(varE x)) |] : es)
+      case u of
+        Nothing -> extract x next us (wildP  :ps) es
+        Just t  -> extract x next us (varP _u:ps) ([| $(unroll t _u) (Prj $this $(varE x)) |] : es)
+
+    unroll t u
+      | Just n <- tyCon t, elem n pts = [| Unroll |]
+      | otherwise                     = [| Match $(varE u) |]
 
     vs = reverse
-       $ [ False | _ <- concat fs0 ] ++ [ True | _ <- fs ] ++ [ False | _ <- concat fs1 ]
+       $ [ Nothing | _ <- concat fs0 ] ++ [ Just f | f <- fs ] ++ [ Nothing | _ <- concat fs1 ]
 
 tyVarBndrName :: TyVarBndr -> Name
 tyVarBndrName (PlainTV  n)   = n
@@ -210,4 +227,12 @@ tupT :: [TypeQ] -> TypeQ
 tupT tup =
   let n = length tup
    in foldl' (\ts t -> [t| $ts $t |]) (tupleT n) tup
+
+tyCon :: Type -> Maybe Name
+tyCon (ConT n)        = Just n
+tyCon (InfixT _ n _)  = Just n
+tyCon (UInfixT _ n _) = Just n
+tyCon (AppT t _)      = tyCon t
+tyCon (ParensT t)     = tyCon t
+tyCon _               = Nothing
 

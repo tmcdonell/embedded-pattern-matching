@@ -98,8 +98,8 @@ mkDataD tn tvs cs = do
 mkCon :: Bool -> Name -> [TyVarBndr] -> [[Type]] -> [[Type]] -> Word8 -> Con -> Q (Name, [Dec])
 mkCon st tn tvs prev next tag = \case
   NormalC nm fs -> mkNormalC st tn (map tyVarBndrName tvs) tag nm prev (map snd fs) next
-  RecC nm fs    -> undefined
-  InfixC a nm b -> undefined
+  RecC nm fs    -> fail "mkPatterns: TODO: record syntax"
+  InfixC a nm b -> fail "mkPatterns: TODO: infix constructors"
   _             -> fail "mkPatterns: only constructors for \"vanilla\" syntax are supported"
 
 mkNormalC :: Bool -> Name -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> [[Type]] -> Q (Name, [Dec])

@@ -5,6 +5,8 @@
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ViewPatterns         #-}
+{-# LANGUAGE TemplateHaskell      #-}
+{-# OPTIONS_GHC -ddump-splices #-}
 
 module List (
 
@@ -20,10 +22,10 @@ import Tuple
 import Type
 import Trace
 import Exp
+import TH
 
 
 data List a = Nil | Cons a (List a)
-  -- deriving (Generic, Elt, IsTuple)
 
 -- mkPattern ''List
   -- generate all instances Elt, IsTuple, and the pattern synonyms
@@ -38,6 +40,9 @@ toList (Cons x xs) = x : toList xs
 fromList :: [a] -> List a
 fromList []     = Nil
 fromList (x:xs) = Cons x (fromList xs)
+
+
+mkPattern ''List
 
 {--}
 instance Elt a => Elt (List a) where
@@ -68,6 +73,7 @@ instance Elt a => IsTuple (List a) where
   toTup _      = error "internal error"
 --}
 
+{--
 pattern Nil_ :: Elt a => Exp (List a)
 pattern Nil_ <- (matchNil -> Just ())
   where Nil_ = buildNil
@@ -99,4 +105,5 @@ matchCons (Match (TraceRtag 1 (TraceRunit `TraceRpair` t `TraceRpair` TraceRrec 
          )
 matchCons Match{} = Nothing
 matchCons _       = error "matchCons: used outside 'match' context"
+--}
 
