@@ -57,7 +57,7 @@ instance Elt a => Elt (List a) where
        : [ TraceRtag 1 (TraceRunit `TraceRpair` a `TraceRpair` TraceRrec (eltR @(List a))) | a <- traceR @a ]
 
 
-instance IsTuple (List a) where
+instance Elt a => IsTuple (List a) where
   type TupleR (List a) = (TAG, TupleR (a, Rec (List a)))
   fromTup Nil         = (0, (((), undefined), undefined))
   fromTup (Cons x xs) = (1, fromTup (x, Rec xs))

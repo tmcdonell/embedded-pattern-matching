@@ -19,14 +19,6 @@ import Tuple
 instance Elt Bool
 instance IsTuple Bool
 
--- instance IsTuple Bool where
---   fromTup False = (0, ())
---   fromTup True  = (1, ())
---   --
---   toTup (0, ()) = False
---   toTup (1, ()) = True
---   toTup _       = error "internal error"
-
 pattern False_ :: Exp Bool
 pattern False_ <- (matchFalse -> Just ())
   where False_ = buildFalse

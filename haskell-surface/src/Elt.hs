@@ -242,26 +242,3 @@ instance (GSumElt a, GSumElt b) => GSumElt (a :+: b) where
 
   gsumUndefR = gsumUndefR @b . gsumUndefR @a
 
-untrace :: TypeR t -> TraceR t
-untrace TypeRunit         = TraceRunit
-untrace (TypeRrec t)      = TraceRundef (TypeRrec t)
-untrace (TypeRprim t)     = TraceRundef (TypeRprim t)
-untrace (TypeRpair ta tb) = TraceRpair (untrace ta) (untrace tb)
-
-undef :: TypeR t -> t
-undef TypeRunit       = ()
-undef (TypeRrec t)    = Rec (toElt (undef t)) -- XXX: explode?
-undef (TypeRpair l r) = (undef l, undef r)
-undef (TypeRprim t)   = prim t
-  where
-    prim :: PrimType t -> t
-    prim (IntegralNumType x) = integral x
-    prim (FloatingNumType x) = floating x
-
-    integral :: IntegralType t -> t
-    integral TypeInt   = 0
-    integral TypeWord8 = 0
-
-    floating :: FloatingType t -> t
-    floating TypeFloat = 0
-

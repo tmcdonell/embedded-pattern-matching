@@ -14,27 +14,7 @@ import Pattern
 import Tuple
 
 data Point = Point Float Float
-  deriving (Generic, Elt, IsTuple)
-
-{--
-instance Elt Point where
-  type EltR Point = EltR (Float, Float)
-
-  toElt p = let (x, y) = toElt p
-             in Point x y
-  fromElt (Point x y) = fromElt (x,y)
-
-  eltR = eltR @(Float, Float)
-  traceR = traceR @(Float, Float)
-
--- type instance TupleR Point = TupleR (Float, Float)
-
-instance IsTuple Point where
-  type TupleR Point = TupleR (Float, Float)
-  fromTup (Point x y) = fromTup (x, y)
-  toTup t = let (x,y) = toTup t
-             in Point x y
---}
+  deriving (Show, Generic, Elt, IsTuple)
 
 pattern Point_ :: Exp Float -> Exp Float -> Exp Point
 pattern Point_ x y = Pattern (x, y)
@@ -46,4 +26,12 @@ liftPoint (Point x y) =
 
 xcoord :: Exp Point -> Exp Float
 xcoord x = Prj (PrjL (PrjR PrjZ)) x
+
+
+data V2 a = V2 a a
+  deriving (Show, Generic, Elt, IsTuple)
+
+pattern V2_ :: Elt a => Exp a -> Exp a -> Exp (V2 a)
+pattern V2_ x y = Pattern (x, y)
+{-# COMPLETE V2_ #-}
 

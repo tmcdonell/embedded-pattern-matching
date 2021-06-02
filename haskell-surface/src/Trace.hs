@@ -47,3 +47,9 @@ instance Show (TraceR a) where
   show (TraceRtag t a)    = "(" ++ show t ++ "#," ++ show a ++ ")"
   show (TraceRpair ta tb) = "(" ++ show ta ++ "," ++ show tb ++ ")"
 
+untrace :: TypeR t -> TraceR t
+untrace TypeRunit         = TraceRunit
+untrace (TypeRrec t)      = TraceRundef (TypeRrec t)
+untrace (TypeRprim t)     = TraceRundef (TypeRprim t)
+untrace (TypeRpair ta tb) = TraceRpair (untrace ta) (untrace tb)
+

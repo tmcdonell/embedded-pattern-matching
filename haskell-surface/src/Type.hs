@@ -75,11 +75,11 @@ typeableDict (TypeRprim t) = prim t
     floating :: FloatingType t -> TypeableDict t
     floating TypeFloat = TypeableDict
 --}
-{--
+
 undef :: TypeR t -> t
 undef TypeRunit       = ()
-undef TypeRrec        = undefined
-undef (TypeRpair a b) = (undef a, undef b)
+undef (TypeRrec t)    = Rec (toElt (undef t)) -- XXX: explode?
+undef (TypeRpair l r) = (undef l, undef r)
 undef (TypeRprim t)   = prim t
   where
     prim :: PrimType t -> t
@@ -92,5 +92,4 @@ undef (TypeRprim t)   = prim t
 
     floating :: FloatingType t -> t
     floating TypeFloat = 0
---}
 

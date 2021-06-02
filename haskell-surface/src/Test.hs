@@ -141,12 +141,12 @@ infixr 5 `cons`
 cons :: Elt a => Exp a -> Exp (List a) -> Exp (List a)
 cons x xs = Tuple $ tag 1 `Pair` (Unit `Pair` Exp x `Pair` Exp (Roll xs))
 
-pair :: Exp a -> Exp b -> Exp (a, b)
+pair :: (Elt a, Elt b) => Exp a -> Exp b -> Exp (a, b)
 pair a b = Tuple $ Unit `Pair` Exp a `Pair` Exp b
 
-fst :: Exp (a, b) -> Exp a
+fst :: (Elt a, Elt b) => Exp (a, b) -> Exp a
 fst = Prj (PrjL (PrjR PrjZ))
 
-snd :: Exp (a, b) -> Exp b
+snd :: (Elt a, Elt b) => Exp (a, b) -> Exp b
 snd = Prj (PrjR PrjZ)
 
