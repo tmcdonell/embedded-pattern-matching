@@ -16,7 +16,6 @@ module Maybe (
 import Elt
 import Exp
 import TH
-import Tuple
 
 instance Elt a => Elt (Maybe a) where
 instance Elt a => IsTuple (Maybe a) where

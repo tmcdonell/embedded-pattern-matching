@@ -5,6 +5,7 @@
 {-# OPTIONS_GHC -fno-warn-unused-matches #-}
 
 module TH.IsTuple (
+  IsTuple(..),
   mkIsTuple,
   mkIsTuple',
 ) where
