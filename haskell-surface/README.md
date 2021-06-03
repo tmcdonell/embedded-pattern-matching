@@ -19,6 +19,9 @@ This version has the AST witnessed by the _surface_ type of the terms.
  * See also the file `Lambda.hs` where we demonstrate an embedded function to
    translate embedded lambda calculus terms into embedded SKI combinator terms
 
+ * See the file `Mutual.hs` for an example of defining mutually recursive data
+   types
+
 
 ## Structure
 
