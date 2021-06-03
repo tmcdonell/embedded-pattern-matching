@@ -43,6 +43,7 @@ fromList (x:xs) = Cons x (fromList xs)
 
 
 mkPattern ''List
+mkIsTuple ''List
 
 {--}
 instance Elt a => Elt (List a) where
@@ -60,8 +61,8 @@ instance Elt a => Elt (List a) where
 
   traceR = TraceRtag 0 (TraceRunit `TraceRpair` TraceRundef (eltR @a) `TraceRpair` TraceRundef (eltR @(Rec (List a))))
        : [ TraceRtag 1 (TraceRunit `TraceRpair` a `TraceRpair` TraceRrec (eltR @(List a))) | a <- traceR @a ]
-
-
+--}
+{--
 instance Elt a => IsTuple (List a) where
   type TupleR (List a) = (TAG, TupleR (a, Rec (List a)))
   fromTup Nil         = (0, (((), undefined), undefined))
@@ -72,7 +73,6 @@ instance Elt a => IsTuple (List a) where
                   in Cons x xs
   toTup _      = error "internal error"
 --}
-
 {--
 pattern Nil_ :: Elt a => Exp (List a)
 pattern Nil_ <- (matchNil -> Just ())

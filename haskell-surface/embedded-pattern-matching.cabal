@@ -39,6 +39,9 @@ library
       Rec
       Test
       TH
+      TH.Common
+      TH.IsTuple
+      TH.Pattern
       Trace
       Tuple
       Type
