@@ -42,6 +42,7 @@ data Exp a where
 
   -- PrimOps
   Add       :: Exp Int -> Exp Int -> Exp Int
+  Eq        :: Exp Int -> Exp Int -> Exp Bool
 
 -- Tuples are heterogeneous lists using () and (,)
 --
@@ -86,6 +87,7 @@ evalExp env = \case
   Case x xs       -> evalExp env $ lookupCase (fromElt (evalExp env x)) xs
   --
   Add x y         -> evalExp env x + evalExp env y
+  Eq x y          -> evalExp env x == evalExp env y
 
 evalTup :: Env -> Tuple t -> t
 evalTup env = \case

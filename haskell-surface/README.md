@@ -16,6 +16,9 @@ This version has the AST witnessed by the _surface_ type of the terms.
    - `length t1`
    - `eval $ length t1`
 
+ * See also the file `Lambda.hs` where we demonstrate an embedded function to
+   translate embedded lambda calculus terms into embedded SKI combinator terms
+
 
 ## Structure
 

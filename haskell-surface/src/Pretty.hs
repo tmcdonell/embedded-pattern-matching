@@ -112,6 +112,7 @@ ppExp = \case
   Match t e   -> annotate (color Red) "match" <+> ppTrace t <+> parens (ppExp e)
 
   Add x y     -> ppExp x <+> "+" <+> ppExp y
+  Eq x y      -> ppExp x <+> "==" <+> ppExp y
 
 
 ppIdx :: Idx t -> Adoc

@@ -28,6 +28,7 @@ library
       Either
       Elt
       Exp
+      Lambda
       List
       Match
       Maybe
