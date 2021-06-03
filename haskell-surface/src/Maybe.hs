@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE ViewPatterns        #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# OPTIONS_GHC -ddump-splices    #-}
+-- {-# OPTIONS_GHC -ddump-splices    #-}
 
 module Maybe (
   Maybe(..), liftMaybe,

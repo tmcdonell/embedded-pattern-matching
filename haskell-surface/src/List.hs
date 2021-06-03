@@ -6,7 +6,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ViewPatterns         #-}
 {-# LANGUAGE TemplateHaskell      #-}
-{-# OPTIONS_GHC -ddump-splices #-}
+-- {-# OPTIONS_GHC -ddump-splices #-}
 
 module List (
 
@@ -17,18 +17,11 @@ module List (
 ) where
 
 import Elt
-import Rec
 import Tuple
-import Type
-import Trace
-import Exp
 import TH
 
 
 data List a = Nil | Cons a (List a)
-
--- mkPattern ''List
-  -- generate all instances Elt, IsTuple, and the pattern synonyms
 
 instance Show a => Show (List a) where
   show = show . toList
@@ -41,11 +34,10 @@ fromList :: [a] -> List a
 fromList []     = Nil
 fromList (x:xs) = Cons x (fromList xs)
 
+mkAll ''List
 
-mkPattern ''List
-mkIsTuple ''List
 
-{--}
+{--
 instance Elt a => Elt (List a) where
   type EltR (List a) = (TAG, EltR (a, Rec (List a)))
 

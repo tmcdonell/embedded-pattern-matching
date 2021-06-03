@@ -6,29 +6,25 @@
 
 module TH.IsTuple (
   mkIsTuple,
-  mkIsTupleR
+  mkIsTuple',
 ) where
 
 import Elt
-import Exp
 import Rec
-import Trace
 import Tuple
 import Type
 import TH.Common
 
-import Data.Bits
 import Data.List
 import Control.Monad
-import Language.Haskell.TH                        hiding ( Exp, Match, match )
-import qualified Language.Haskell.TH              as TH
+import Language.Haskell.TH                        hiding ( Exp, Match, match, recP )
 
 
 mkIsTuple :: Name -> DecsQ
-mkIsTuple nm = mkIsTupleR nm []
+mkIsTuple nm = mkIsTuple' nm []
 
-mkIsTupleR :: Name -> [Name] -> DecsQ
-mkIsTupleR nm pts = do
+mkIsTuple' :: Name -> [Name] -> DecsQ
+mkIsTuple' nm pts = do
   info <- reify nm
   case info of
     TyConI dec -> mkDec pts dec
@@ -47,13 +43,13 @@ mkNewtypeD nm pts tvbs c = mkDataD nm (nm:pts) tvbs [c]
 mkDataD :: Name -> [Name] -> [TyVarBndr] -> [Con] -> DecsQ
 mkDataD nm pts tvbs cs = do
   (from,to) <- unzip <$> go [] fts cs cts
-  dec       <- isTuple from to
+  dec       <- mk from to
   return [dec]
   where
     tvns    = map tyVarBndrName tvbs
     cont    = foldl' appT (conT nm) (map varT tvns)
 
-    isTuple from to =
+    mk from to =
       instanceD
         (cxt (map (\t -> [t| Elt $(varT t) |]) tvns))
         [t| IsTuple $cont |]
@@ -77,10 +73,10 @@ mkDataD nm pts tvbs cs = do
       | Just n <- tyConName t, elem n pts = [t| Rec $(return t) |]
       | otherwise                         = return t
 
-    n   = length cs
-    st  = n > 1
+    nc  = length cs
+    st  = nc > 1
     fts = map fieldTys cs
-    cts = constructorTags n
+    cts = constructorTags nc
 
     go prev (this:next) (con:cons) (tag:tags) = do
       r  <- mkCon st pts tvns tag prev next con
@@ -100,7 +96,7 @@ mkNormalC :: Bool -> [Name] -> [Name] -> Word8 -> Name -> [[Type]] -> [Type] -> 
 mkNormalC st pts tvs tag nm fs0 fs fs1 = do
   xs <- replicateM (length fs) (newName "_x")
   let
-      fromTup = clause [lhs] body []
+      mkFromTup = clause [lhs] body []
         where
           lhs  = conP nm (map varP xs)
           body = normalB
@@ -111,13 +107,13 @@ mkNormalC st pts tvs tag nm fs0 fs fs1 = do
               ++ map (\t -> [| toElt (undef (eltR @ $(recT t))) |]) (concat fs1)
 
           sumE e
-            | st        = [| ( $(litE (IntegerL (toInteger tag))), $e) |]
+            | st        = [| ( $(litE tagL), $e) |]
             | otherwise = e
 
-      toTup = clause [lhs] body []
+      mkToTup = clause [lhs] body []
         where
           sumP p
-            | st        = tupP [ litP (IntegerL (toInteger tag)), p ]
+            | st        = tupP [ litP tagL, p ]
             | otherwise = p
 
           lhs  = sumP
@@ -130,9 +126,10 @@ mkNormalC st pts tvs tag nm fs0 fs fs1 = do
                $ foldl' appE (conE nm)
                $ map varE xs
   --
-  return (fromTup, toTup)
-
+  return (mkFromTup, mkToTup)
   where
+    tagL = IntegerL (toInteger tag)
+
     recT t
       | Just n <- tyConName t, elem n pts = [t| Rec $(return t) |]
       | otherwise                         = return t
@@ -144,7 +141,4 @@ mkNormalC st pts tvs tag nm fs0 fs fs1 = do
     recP t x
       | Just n <- tyConName t, elem n pts = [p| Rec $(varP x) |]
       | otherwise                         = varP x
-
-    vs = reverse
-       $ [ Nothing | _ <- concat fs0 ] ++ [ Just f | f <- fs ] ++ [ Nothing | _ <- concat fs1 ]
 

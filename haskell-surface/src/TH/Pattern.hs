@@ -6,7 +6,7 @@
 
 module TH.Pattern (
   mkPattern,
-  mkPatternR,
+  mkPattern',
 ) where
 
 import Elt
@@ -34,10 +34,10 @@ import qualified Language.Haskell.TH              as TH
 --   * Is it possible to add additional extensions pragmas to the file?
 --
 mkPattern :: Name -> DecsQ
-mkPattern nm = mkPatternR nm []
+mkPattern nm = mkPattern' nm []
 
-mkPatternR :: Name -> [Name] -> DecsQ
-mkPatternR nm rec = do
+mkPattern' :: Name -> [Name] -> DecsQ
+mkPattern' nm rec = do
   info <- reify nm
   case info of
     TyConI dec -> mkDec rec dec

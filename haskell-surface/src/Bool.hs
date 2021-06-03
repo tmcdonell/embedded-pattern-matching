@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE ViewPatterns        #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# OPTIONS_GHC -ddump-splices    #-}
+-- {-# OPTIONS_GHC -ddump-splices    #-}
 
 module Bool (
   Bool(..),
@@ -16,10 +16,6 @@ module Bool (
 import Elt
 import Tuple
 import TH
-
-import Exp
-import Trace
-import Type
 
 instance Elt Bool
 instance IsTuple Bool
