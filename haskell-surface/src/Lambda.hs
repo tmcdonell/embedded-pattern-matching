@@ -130,7 +130,7 @@ zero :: Lambda
 zero = Lam (mkName "s") $ Lam (mkName "z") $ Var (mkName "z")
 
 one :: Lambda
-one  = Lam (mkName "s") $ Lam (mkName "z") $ App (Var (mkName "s")) (Var (mkName "z"))
+one = Lam (mkName "s") $ Lam (mkName "z") $ App (Var (mkName "s")) (Var (mkName "z"))
 
 suc :: Lambda
 suc = Lam (mkName "n")
