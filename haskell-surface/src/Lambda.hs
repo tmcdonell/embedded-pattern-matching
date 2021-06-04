@@ -42,6 +42,7 @@ data Lambda
   = Var Name
   | App Lambda Lambda
   | Lam Name Lambda
+  deriving Show
 
 data SKI
   = S
@@ -49,6 +50,7 @@ data SKI
   | I
   | Var' Name
   | App' SKI SKI
+  deriving Show
 
 pattern Name_ :: Exp (List Int) -> Exp Name
 pattern Name_ l = Pattern l
@@ -107,4 +109,31 @@ eqList us vs =
       go _ _                       = False_
   in
   Exp.Let l (Exp.Lam u (Exp.Lam v ((match go) (Exp.Var u) (Exp.Var v)))) (Exp.Var l `Exp.App` us `Exp.App` vs)
+
+
+liftLambda :: Lambda -> Exp Lambda
+liftLambda (Var (Name n)) = Var_ (Name_ (liftList n))
+liftLambda (App t1 t2) = App_ (liftLambda t1) (liftLambda t2)
+liftLambda (Lam (Name n) t) = Lam_ (Name_ (liftList n)) (liftLambda t)
+
+zero :: Lambda
+zero = Lam (mkName "s") $ Lam (mkName "z") $ Var (mkName "z")
+
+one :: Lambda
+one  = Lam (mkName "s") $ Lam (mkName "z") $ App (Var (mkName "s")) (Var (mkName "z"))
+
+suc :: Lambda
+suc = Lam (mkName "n")
+    $ Lam (mkName "s")
+    $ Lam (mkName "z")
+    $ App (Var (mkName "s")) (App (App (Var (mkName "n")) (Var (mkName "s"))) (Var (mkName "z")))
+
+add :: Lambda
+add = Lam (mkName "m")
+    $ Lam (mkName "n")
+    $ App (App (Var (mkName "m")) suc) (Var (mkName "n"))
+
+
+test0 = toSKI (liftLambda zero)
+test1 = toSKI (liftLambda one)
 

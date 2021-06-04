@@ -10,6 +10,7 @@ import Rec
 import Trace
 import Tuple
 import Type
+import Debug
 
 import Data.Dynamic
 import Data.Map                                           ( Map )
@@ -83,7 +84,9 @@ evalExp env = \case
   Unroll e        -> let Rec x = evalExp env e in x
   Roll e          -> Rec (evalExp env e)
   Undef{}         -> error "evalExp: undef"
-  Match{}         -> error "evalExp: match"
+  Match _ e       -> if dEBUG
+                       then error "evalExp: match"
+                       else evalExp env e
   Case x xs       -> evalExp env $ lookupCase (fromElt (evalExp env x)) xs
   --
   Add x y         -> evalExp env x + evalExp env y

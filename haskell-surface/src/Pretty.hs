@@ -14,6 +14,7 @@ import Exp
 import Rec
 import Trace
 import Type
+import Debug
 
 import Data.Text.Prettyprint.Doc
 import Data.Text.Prettyprint.Doc.Render.Terminal
@@ -109,7 +110,9 @@ ppExp = \case
       : map (\(t,e) -> ppTrace t <+> "->" <+> align (ppExp e)) xs
 
   -- Match{} -> error "Match: should not appear in the final AST"
-  Match t e   -> annotate (color Red) "match" <+> ppTrace t <+> parens (ppExp e)
+  Match t e   -> if dEBUG
+                   then annotate (color Red) "match" <+> ppTrace t <+> parens (ppExp e)
+                   else parens (ppExp e)
 
   Add x y     -> ppExp x <+> "+" <+> ppExp y
   Eq x y      -> ppExp x <+> "==" <+> ppExp y

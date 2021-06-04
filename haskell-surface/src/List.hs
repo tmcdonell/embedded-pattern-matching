@@ -10,13 +10,14 @@
 
 module List (
 
-  List(..), toList, fromList,
+  List(..), toList, fromList, liftList,
   pattern Nil_,
   pattern Cons_,
 
 ) where
 
 import TH
+import Exp
 
 data List a = Nil | Cons a (List a)
 
@@ -32,4 +33,8 @@ fromList []     = Nil
 fromList (x:xs) = Cons x (fromList xs)
 
 mkAll ''List
+
+liftList :: Elt a => List a -> Exp (List a)
+liftList Nil = Nil_
+liftList (Cons x xs) = Cons_ (Const (fromElt x)) (liftList xs)
 

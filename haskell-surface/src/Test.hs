@@ -129,9 +129,9 @@ word8 = Const
 tag :: TAG -> Tuple TAG
 tag = Exp . word8
 
-liftList :: forall a. Elt a => List a -> Exp (List a)
-liftList Nil = nil
-liftList (Cons x xs) = Const (fromElt x) `cons` liftList xs
+-- liftList :: forall a. Elt a => List a -> Exp (List a)
+-- liftList Nil = nil
+-- liftList (Cons x xs) = Const (fromElt x) `cons` liftList xs
 
 nil :: forall a. Elt a => Exp (List a)
 nil = Tuple $ tag 0 `Pair` (Unit `Pair` Exp (Undef (eltR @a))

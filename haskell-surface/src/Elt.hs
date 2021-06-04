@@ -20,6 +20,7 @@ import Type
 import Trace
 
 import Data.Bits
+import Data.Char
 import GHC.Generics
 
 import Type.Reflection
@@ -75,6 +76,13 @@ instance Elt Float where
   type EltR Float = Float
   toElt   = id
   fromElt = id
+  eltR    = TypeRprim primType
+  traceR  = [TraceRprim primType]
+
+instance Elt Char where
+  type EltR Char = Int
+  toElt   = chr
+  fromElt = ord
   eltR    = TypeRprim primType
   traceR  = [TraceRprim primType]
 
