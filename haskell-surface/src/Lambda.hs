@@ -27,6 +27,7 @@ import qualified Exp                                      as Exp
 
 import Data.Char
 import Data.Function
+import Text.Printf
 
 
 data Name = Name (List Int)
@@ -50,7 +51,14 @@ data SKI
   | I
   | Var' Name
   | App' SKI SKI
-  deriving Show
+
+instance Show SKI where
+  show = \case
+    S          -> "S"
+    K          -> "K"
+    I          -> "I"
+    Var' n     -> show n
+    App' t1 t2 -> printf "(%s %s)" (show t1) (show t2)
 
 pattern Name_ :: Exp (List Int) -> Exp Name
 pattern Name_ l = Pattern l
@@ -64,51 +72,53 @@ mkAll ''SKI
 --
 toSKI :: Exp Lambda -> Exp SKI
 toSKI lam =
-  let s = Exp.Idx "toSKI"
-      r = Exp.Idx "remove"
-      e = Exp.Idx "eqName"
-      p = Exp.Idx "p"
-      q = Exp.Idx "q"
-      u = Exp.Idx "u"
-      v = Exp.Idx "v"
-      w = Exp.Idx "w"
+  let
+      toSKI_  = Exp.Idx "toSKI"
+      remove_ = Exp.Idx "remove"
+      eqName_ = Exp.Idx "eqName"
+      p       = Exp.Idx "p"
+      q       = Exp.Idx "q"
+      u       = Exp.Idx "u"
+      v       = Exp.Idx "v"
+      w       = Exp.Idx "w"
 
       -- The auxiliary function 'remove' does the actual work...
       toSKI' = match \case
         Var_ x     -> Var'_ x
-        App_ t1 t2 -> (Exp.Var s `Exp.App` t1) `App'_` (Exp.Var s `Exp.App` t2)
-        Lam_ x t   -> Exp.Var r `Exp.App` x `Exp.App` (Exp.Var s `Exp.App` t)
+        App_ t1 t2 -> (Exp.Var toSKI_ `Exp.App` t1) `App'_` (Exp.Var toSKI_ `Exp.App` t2)
+        Lam_ x t   -> Exp.Var remove_ `Exp.App` x `Exp.App` (Exp.Var toSKI_ `Exp.App` t)
 
       -- ...sometimes known as 'bracket abstraction'
-      remove' x = match \case
-        Var'_ y -> (Exp.Var e `Exp.App` x `Exp.App` y) & match \case
+      remove x = match \case
+        Var'_ y -> (Exp.Var eqName_ `Exp.App` x `Exp.App` y) & match \case
                      True_  -> I_
                      False_ -> K_ `App'_` Var'_ y
-        App'_ t1 t2 -> S_ `App'_` (Exp.Var r `Exp.App` x `Exp.App` t1)
-                         `App'_` (Exp.Var r `Exp.App` x `Exp.App` t2)
+        App'_ t1 t2 -> S_ `App'_` (Exp.Var remove_ `Exp.App` x `Exp.App` t1)
+                         `App'_` (Exp.Var remove_ `Exp.App` x `Exp.App` t2)
         y           -> K_ `App'_` y
   in
-  Exp.Let e (Exp.Lam p (Exp.Lam q (eqName (Exp.Var p) (Exp.Var q)))) (
-  Exp.Let r (Exp.Lam u (Exp.Lam v (remove' (Exp.Var u) (Exp.Var v)))) (
-  Exp.Let s (Exp.Lam w (toSKI' (Exp.Var w))) (
-    Exp.Var s `Exp.App` lam)))
+  Exp.Let eqName_ (Exp.Lam p (Exp.Lam q (eqName (Exp.Var p) (Exp.Var q)))) (
+  Exp.Let remove_ (Exp.Lam u (Exp.Lam v (remove (Exp.Var u) (Exp.Var v)))) (
+  Exp.Let toSKI_ (Exp.Lam w (toSKI' (Exp.Var w))) (
+    Exp.Var toSKI_ `Exp.App` lam)))
 
 eqName :: Exp Name -> Exp Name -> Exp Bool
 eqName (Name_ x) (Name_ y) = eqList x y
 
 eqList :: Exp (List Int) -> Exp (List Int) -> Exp Bool
 eqList us vs =
-  let l = Exp.Idx "eqList"
-      u = Exp.Idx "u"
-      v = Exp.Idx "v"
+  let eqList_ = Exp.Idx "eqList"
+      u       = Exp.Idx "u"
+      v       = Exp.Idx "v"
 
       go Nil_ Nil_                 = True_
       go (Cons_ x xs) (Cons_ y ys) = Exp.Eq x y & match \case
                                        False_ -> False_
-                                       True_  -> Exp.Var l `Exp.App` xs `Exp.App` ys
+                                       True_  -> Exp.Var eqList_ `Exp.App` xs `Exp.App` ys
       go _ _                       = False_
   in
-  Exp.Let l (Exp.Lam u (Exp.Lam v ((match go) (Exp.Var u) (Exp.Var v)))) (Exp.Var l `Exp.App` us `Exp.App` vs)
+  Exp.Let eqList_ (Exp.Lam u (Exp.Lam v ((match go) (Exp.Var u) (Exp.Var v)))) (
+    Exp.Var eqList_ `Exp.App` us `Exp.App` vs)
 
 
 liftLambda :: Lambda -> Exp Lambda
