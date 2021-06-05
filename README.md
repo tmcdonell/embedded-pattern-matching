@@ -33,11 +33,8 @@ This implementation in Haskell uses an embedded language where the AST witnesses
 terms based on the _surface_ type of those terms (that is, the user's view of a
 data type). This is the language described in the paper.
 
-Supports sum, product, and recursive data types.
-
-We have not yet copied over all of the GHC.Generics and TemplateHaskell
-automation from the `haskell-repr` implementation, but that is a straightforward
-process (there are only minimal differences between the two implementations).
+Supports sum, product, and (mutually) recursive data types. Includes the
+GHC.Generics and TemplateHaskell automation described in the paper.
 
 See `haskell-surface/README.md` for more information.
 
@@ -50,7 +47,7 @@ the style used by the embedded language from the case study (Accelerate). There
 are overall only minor differences between this language and that from the
 implementation of `haskell-surface` as described in the paper.
 
-Supports sum and product data types, and includes all the GHC.Generics and
+Supports sum and product data types. Includes all the GHC.Generics and
 TemplateHaskell automation discussed in the paper.
 
 See `haskell-repr/README.md` for more information.
