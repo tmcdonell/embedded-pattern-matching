@@ -122,8 +122,8 @@ eqList us vs =
 
 
 liftLambda :: Lambda -> Exp Lambda
-liftLambda (Var (Name n)) = Var_ (Name_ (liftList n))
-liftLambda (App t1 t2) = App_ (liftLambda t1) (liftLambda t2)
+liftLambda (Var (Name n))   = Var_ (Name_ (liftList n))
+liftLambda (App t1 t2)      = App_ (liftLambda t1) (liftLambda t2)
 liftLambda (Lam (Name n) t) = Lam_ (Name_ (liftList n)) (liftLambda t)
 
 zero :: Lambda
