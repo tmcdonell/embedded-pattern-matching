@@ -1,7 +1,8 @@
 embedded-pattern-matching
 =========================
 
-Implementation to accompany the paper _Embedded Pattern Matching_ by ~~redacted~~.
+Implementation to accompany the paper _Embedded Pattern Matching_ by Trevor L.
+McDonell, Joshua D. Meredith, and Gabriele Keller ([pdf](https://arxiv.org/abs/2108.13114)).
 
 With this technique we can use pattern matching in the _host_ language to
 introduce case expressions in the _embedded_ language, in much the same way the
