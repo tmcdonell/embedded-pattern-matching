@@ -9,9 +9,8 @@ version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/tmcdonell/embedded-pattern-matching#readme>
 homepage:       https://github.com/tmcdonell/embedded-pattern-matching#readme
 bug-reports:    https://github.com/tmcdonell/embedded-pattern-matching/issues
-author:         redacted
-maintainer:     redacted
-copyright:      redacted
+author:         Trevor L. McDonell, Joshua D. Meredith, and Gabriele Keller
+maintainer:     Trevor L. McDonell <trevor.mcdonell@gmail.com>
 license:        BSD3
 build-type:     Simple
 extra-source-files:

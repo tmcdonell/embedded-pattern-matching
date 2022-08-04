@@ -2,9 +2,8 @@ name:                embedded-pattern-matching
 version:             0.1.0.0
 github:              "tmcdonell/embedded-pattern-matching"
 license:             BSD3
-author:              "redacted"
-maintainer:          "redacted"
-copyright:           "redacted"
+author:              "Trevor L. McDonell, Joshua D. Meredith, and Gabriele Keller"
+maintainer:          "Trevor L. McDonell <trevor.mcdonell@gmail.com>"
 
 extra-source-files:
 - README.md

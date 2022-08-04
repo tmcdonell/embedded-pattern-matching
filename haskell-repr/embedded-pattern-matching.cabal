@@ -4,16 +4,15 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e74e399b44938bb8dcf829c2f295d18ffca4c51731ce70017198661e756a0232
+-- hash: 34963383a2da29761b0b1aa64006d56f34b1d6648be17f22d1e3cbd0dea26f26
 
 name:           embedded-pattern-matching
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/tmcdonell/embedded-pattern-matching#readme>
 homepage:       https://github.com/tmcdonell/embedded-pattern-matching#readme
 bug-reports:    https://github.com/tmcdonell/embedded-pattern-matching/issues
-author:         redacted
-maintainer:     redacted
-copyright:      redacted
+author:         Trevor L. McDonell, Joshua D. Meredith, and Gabriele Keller
+maintainer:     Trevor L. McDonell <trevor.mcdonell@gmail.com>
 license:        BSD3
 build-type:     Simple
 extra-source-files:
