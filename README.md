@@ -2,7 +2,22 @@ embedded-pattern-matching
 =========================
 
 Implementation to accompany the paper _Embedded Pattern Matching_ by Trevor L.
-McDonell, Joshua D. Meredith, and Gabriele Keller ([pdf](https://arxiv.org/abs/2108.13114)).
+McDonell, Joshua D. Meredith, and Gabriele Keller, Haskell Symposium 2022.
+([pdf](https://dl.acm.org/doi/10.1145/3546189.3549917), [slides](https://speakerdeck.com/tmcdonell/embedded-pattern-matching), video (TBD))
+
+<!--
+```
+@inproceedings{embedded_pattern_matching,
+  author    = {McDonell, Trevor L. and Meredith, Joshua D. and Keller, Gabriele},
+  title     = {Embedded Pattern Matching},
+  year      = {2022},
+  doi       = {10.1145/3546189.3549917},
+  booktitle = {Haskell Symposium},
+  pages     = {123–136},
+  numpages  = {14},
+}
+```
+-->
 
 With this technique we can use pattern matching in the _host_ language to
 introduce case expressions in the _embedded_ language, in much the same way the
